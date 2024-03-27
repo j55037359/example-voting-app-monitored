@@ -82,7 +82,7 @@ services:
     command:
     - --config.file=/var/lib/prometheus.yml
     volumes:
-    - ./prometheus:/var/lib/prometheus.yml:ro
+    - ./prometheus/prometheus.yml:/var/lib/prometheus.yml:ro
     depends_on:
     - cadvisor
   cadvisor:
@@ -97,6 +97,17 @@ services:
     - /var/lib/docker/:/var/lib/docker:ro
     depends_on:
     - redis
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+    volumes:
+      - ./compose.yml:/etc/grafana/provisioning/datasources
   # this service runs once to seed the database with votes
   # it won't run unless you specify the "seed" profile
   # docker compose --profile seed up -d
